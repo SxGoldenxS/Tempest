@@ -41,6 +41,9 @@
     <Border x:Name="UpdateNotice" Visibility="Collapsed" Background="#29495F" BorderBrush="#91D5F3" BorderThickness="1" CornerRadius="6" Padding="13" Margin="0,0,0,10">
      <DockPanel><Button Content="Get update" DockPanel.Dock="Right" Style="{StaticResource Primary}" Click="UpdateTempest_Click" Margin="12,0,0,0"/><TextBlock x:Name="UpdateText" TextWrapping="Wrap" FontSize="12" VerticalAlignment="Center" AutomationProperties.LiveSetting="Polite"/></DockPanel>
     </Border>
+    <Border x:Name="SpicetifyUpdateNotice" Visibility="Collapsed" Background="#29495F" BorderBrush="#91D5F3" BorderThickness="1" CornerRadius="6" Padding="13" Margin="0,0,0,10">
+     <DockPanel><Button Content="Review Spicetify update" DockPanel.Dock="Right" Style="{StaticResource Primary}" Click="UpdateSpicetify_Click" Margin="12,0,0,0"/><TextBlock x:Name="SpicetifyUpdateText" TextWrapping="Wrap" FontSize="12" VerticalAlignment="Center" AutomationProperties.LiveSetting="Polite"/></DockPanel>
+    </Border>
     <Border x:Name="Notice" Background="#253F54" BorderBrush="#345267" BorderThickness="1" CornerRadius="6" Padding="13,11" Margin="0,0,0,20">
      <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="25"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><TextBlock Text="&#xE946;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="#91D5F3" VerticalAlignment="Center"/><TextBlock x:Name="NoticeText" Grid.Column="1" Text="Checking your installation…" FontSize="12" Foreground="#BCD5E5" TextWrapping="Wrap"/></Grid>
     </Border>

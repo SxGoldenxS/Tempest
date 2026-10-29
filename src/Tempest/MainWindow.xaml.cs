@@ -15,6 +15,7 @@ public partial class MainWindow : Window
     readonly List<string> log = [];
     readonly bool demo;
     Status? status;
+    string? latestSpicetifyTag;
     string page = "overview";
     bool busy;
     bool elevated;
@@ -48,7 +49,7 @@ public partial class MainWindow : Window
         FooterStatus.Text=demo ? "Demo mode" : "Ready";
         if(demo) Title += " [DEMO]";
         VersionLabel.Text = "Rimuru edition · v" + typeof(MainWindow).Assembly.GetName().Version?.ToString(3);
-        Loaded += async (_,_)=> { await Refresh(); ShowPage("overview"); if (!demo) await CheckTempestUpdate(); };
+        Loaded += async (_,_)=> { await Refresh(); ShowPage("overview"); if (!demo) await Task.WhenAll(CheckTempestUpdate(), CheckSpicetifyUpdate()); };
         Closing += (_,e)=>
         {
             if(busy) { e.Cancel=true; NoticeText.Text="An operation is running. Cancel it and wait for recovery to finish before closing."; }
@@ -60,7 +61,7 @@ public partial class MainWindow : Window
         try
         {
             var installed = typeof(MainWindow).Assembly.GetName().Version!;
-            var latest = await TempestUpdates.Check(installed, CancellationToken.None);
+            var latest = await ReleaseUpdates.Check(installed, CancellationToken.None);
             if (latest != null)
             {
                 UpdateText.Text = $"Tempest {latest} is available. You have {installed.ToString(3)}. Download the new executable to update.";
@@ -74,8 +75,34 @@ public partial class MainWindow : Window
     }
     void UpdateTempest_Click(object sender, RoutedEventArgs e)
     {
-        try { Process.Start(new ProcessStartInfo(TempestUpdates.ReleasesUrl) { UseShellExecute = true }); }
-        catch (Exception error) { NoticeText.Text = "Open " + TempestUpdates.ReleasesUrl + " to update. " + Clean(error.Message); }
+        try { Process.Start(new ProcessStartInfo(ReleaseUpdates.ReleasesUrl) { UseShellExecute = true }); }
+        catch (Exception error) { NoticeText.Text = "Open " + ReleaseUpdates.ReleasesUrl + " to update. " + Clean(error.Message); }
+    }
+    async Task CheckSpicetifyUpdate()
+    {
+        if (status?.Cli != true) return;
+        try
+        {
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(12));
+            latestSpicetifyTag = (await engine.Latest("cli", timeout.Token)).Tag;
+            ShowSpicetifyUpdate();
+        }
+        catch (Exception error) when (error is System.Net.Http.HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
+        {
+            AppendLog("Spicetify update check unavailable: " + error.Message);
+        }
+    }
+    void ShowSpicetifyUpdate()
+    {
+        var newer = status?.Cli == true && latestSpicetifyTag != null
+            ? ReleaseUpdates.NewerSpicetifyVersion(latestSpicetifyTag, status.CliVersion) : null;
+        SpicetifyUpdateNotice.Visibility = newer == null ? Visibility.Collapsed : Visibility.Visible;
+        if (newer != null) SpicetifyUpdateText.Text = $"Spicetify {newer} is available. You have {status!.CliVersion}. Review the update to continue.";
+    }
+    void UpdateSpicetify_Click(object sender, RoutedEventArgs e)
+    {
+        ShowPage("install");
+        InstallReview();
     }
     string Clean(string text)
     {
@@ -99,6 +126,7 @@ public partial class MainWindow : Window
         {
             status=await engine.Inspect(CancellationToken.None);
             checkpoints=await Task.Run(()=>engine.Recovery.List());
+            if (!demo) ShowSpicetifyUpdate();
             NoticeText.Text=demo ? "Demo mode — try the tools without changing Spotify." : elevated ? "Reopen Tempest without administrator privileges to use the tools." : !status.Spotify ? "Install desktop Spotify to get started." : !status.Cli ? "Spotify is ready. Install Spicetify to customise it." : "Your installation is ready.";
         }
         catch(Exception e) { NoticeText.Text="Could not refresh: "+Clean(e.Message); AppendLog(e.Message); }

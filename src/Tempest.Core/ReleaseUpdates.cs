@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace Tempest.Core;
 
-public static class TempestUpdates
+public static class ReleaseUpdates
 {
     public const string ReleasesUrl = "https://github.com/SxGoldenxS/Tempest/releases/latest";
     static readonly HttpClient client = CreateClient();
@@ -19,6 +19,13 @@ public static class TempestUpdates
     {
         var json = await client.GetStringAsync("https://api.github.com/repos/SxGoldenxS/Tempest/releases/latest", token);
         return NewerVersion(json, installed);
+    }
+
+    public static Version? NewerSpicetifyVersion(string latestTag, string installedOutput)
+    {
+        if (!Version.TryParse(latestTag.Trim().TrimStart('v'), out var latest)) return null;
+        var match = System.Text.RegularExpressions.Regex.Match(installedOutput.Trim(), @"^(?:spicetify\s+)?v?(\d+\.\d+\.\d+)$", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        return match.Success && Version.TryParse(match.Groups[1].Value, out var current) && latest > current ? latest : null;
     }
 
     public static Version? NewerVersion(string releaseJson, Version installed)
