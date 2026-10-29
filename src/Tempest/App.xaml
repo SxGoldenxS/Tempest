@@ -1,0 +1,20 @@
+<Application x:Class="Tempest.App" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" ThemeMode="Dark">
+ <Application.Resources>
+  <SolidColorBrush x:Key="Ink" Color="#EAF2F9"/>
+  <SolidColorBrush x:Key="Muted" Color="#9FB5C8"/>
+  <SolidColorBrush x:Key="Accent" Color="#91D5F3"/>
+  <LinearGradientBrush x:Key="PanelSurface" StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#D52D4A60" Offset="0"/><GradientStop Color="#CF23394F" Offset="0.55"/><GradientStop Color="#D325354E" Offset="1"/></LinearGradientBrush>
+  <LinearGradientBrush x:Key="PanelEdge" StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#6D7296B1" Offset="0"/><GradientStop Color="#353B566E" Offset="0.55"/><GradientStop Color="#45506D87" Offset="1"/></LinearGradientBrush>
+  <Style x:Key="ActionButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+   <Setter Property="Foreground" Value="#EAF2F9"/><Setter Property="Background" Value="#344B60"/><Setter Property="BorderBrush" Value="#4A6175"/><Setter Property="Padding" Value="15,8"/><Setter Property="MinHeight" Value="34"/><Setter Property="FontSize" Value="12"/><Setter Property="Cursor" Value="Hand"/>
+  </Style>
+  <Style x:Key="Primary" TargetType="Button" BasedOn="{StaticResource ActionButton}"><Setter Property="Background" Value="#91D5F3"/><Setter Property="Foreground" Value="#102C3D"/><Setter Property="BorderBrush" Value="#A4E1FB"/><Setter Property="FontWeight" Value="SemiBold"/></Style>
+  <Style x:Key="NavIcon" TargetType="TextBlock"><Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets"/><Setter Property="FontSize" Value="16"/><Setter Property="Width" Value="32"/><Setter Property="VerticalAlignment" Value="Center"/></Style>
+  <Style x:Key="Nav" TargetType="Button">
+   <Setter Property="Background" Value="Transparent"/><Setter Property="BorderBrush" Value="Transparent"/><Setter Property="Foreground" Value="#BED0DF"/><Setter Property="FontSize" Value="13"/><Setter Property="Height" Value="40"/><Setter Property="Margin" Value="0,2"/><Setter Property="Cursor" Value="Hand"/><Setter Property="HorizontalContentAlignment" Value="Left"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button"><Grid><Border x:Name="Surface" Background="{TemplateBinding Background}" CornerRadius="5"/><Border Width="3" Height="17" Background="{TemplateBinding BorderBrush}" CornerRadius="2" HorizontalAlignment="Left" Margin="2,0,0,0"/><ContentPresenter Margin="14,0,8,0" VerticalAlignment="Center" HorizontalAlignment="Left"/></Grid><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Surface" Property="Opacity" Value="0.8"/><Setter TargetName="Surface" Property="Background" Value="#344C61"/></Trigger><Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Surface" Property="BorderBrush" Value="#91D5F3"/><Setter TargetName="Surface" Property="BorderThickness" Value="1"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <Style x:Key="Card" TargetType="Border"><Setter Property="Background" Value="{StaticResource PanelSurface}"/><Setter Property="BorderBrush" Value="{StaticResource PanelEdge}"/><Setter Property="BorderThickness" Value="1"/><Setter Property="CornerRadius" Value="7"/><Setter Property="Padding" Value="20"/></Style>
+  <Style x:Key="Caption" TargetType="TextBlock"><Setter Property="Foreground" Value="#9FB5C8"/><Setter Property="FontSize" Value="12"/><Setter Property="LineHeight" Value="19"/><Setter Property="TextWrapping" Value="Wrap"/></Style>
+ </Application.Resources>
+</Application>

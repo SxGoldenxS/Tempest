@@ -1,0 +1,38 @@
+name: Build Tempest
+on:
+  push:
+    branches: [main]
+    paths: ['src/**', 'tests/**', 'build.ps1', 'Directory.Build.props', '.github/workflows/tempest.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Test and package
+        run: ./build.ps1 -Version "0.3.${{ github.run_number }}"
+      - name: Create download
+        run: |
+          $hash = (Get-FileHash dist/win-x64/Tempest.exe -Algorithm SHA256).Hash.ToLower()
+          "$hash  Tempest.exe" | Set-Content dist/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Tempest-Windows-x64
+          path: |
+            dist/win-x64/Tempest.exe
+            dist/SHA256SUMS.txt
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "tempest-v0.3.${{ github.run_number }}"
+          gh release create $tag dist/win-x64/Tempest.exe dist/SHA256SUMS.txt --target '${{ github.sha }}' --title "Tempest 0.3.${{ github.run_number }}" --notes 'Download Tempest.exe and double-click it. No separate .NET installation, source files, or setup scripts required. Windows x64. Use --demo for an isolated preview. See README.md for features and current limitations.'
+          if ($LASTEXITCODE -ne 0) { throw 'Release publication failed.' }
