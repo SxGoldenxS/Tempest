@@ -47,12 +47,35 @@ public partial class MainWindow : Window
         engine.Stage += message=>Dispatcher.Invoke(()=> { OperationDetail.Text=Clean(message); if(message.Contains("Restoring")) CancelButton.IsEnabled=false; });
         FooterStatus.Text=demo ? "Demo mode" : "Ready";
         if(demo) Title += " [DEMO]";
-        Loaded += async (_,_)=> { await Refresh(); ShowPage("overview"); };
+        VersionLabel.Text = "Rimuru edition · v" + typeof(MainWindow).Assembly.GetName().Version?.ToString(3);
+        Loaded += async (_,_)=> { await Refresh(); ShowPage("overview"); if (!demo) await CheckTempestUpdate(); };
         Closing += (_,e)=>
         {
             if(busy) { e.Cancel=true; NoticeText.Text="An operation is running. Cancel it and wait for recovery to finish before closing."; }
         };
         AppendLog(demo?"Demo session started. Real Spotify files and settings are never changed.":"Tempest started. No changes made to Spotify.");
+    }
+    async Task CheckTempestUpdate()
+    {
+        try
+        {
+            var installed = typeof(MainWindow).Assembly.GetName().Version!;
+            var latest = await TempestUpdates.Check(installed, CancellationToken.None);
+            if (latest != null)
+            {
+                UpdateText.Text = $"Tempest {latest} is available. You have {installed.ToString(3)}. Download the new executable to update.";
+                UpdateNotice.Visibility = Visibility.Visible;
+            }
+        }
+        catch (Exception error) when (error is System.Net.Http.HttpRequestException or OperationCanceledException or System.Text.Json.JsonException or InvalidOperationException)
+        {
+            AppendLog("Tempest update check unavailable: " + error.Message);
+        }
+    }
+    void UpdateTempest_Click(object sender, RoutedEventArgs e)
+    {
+        try { Process.Start(new ProcessStartInfo(TempestUpdates.ReleasesUrl) { UseShellExecute = true }); }
+        catch (Exception error) { NoticeText.Text = "Open " + TempestUpdates.ReleasesUrl + " to update. " + Clean(error.Message); }
     }
     string Clean(string text)
     {
@@ -172,6 +195,7 @@ public partial class MainWindow : Window
     void InstallPage()
     {
         Heading("Install and keep up to date","Select a tool to review its changes before continuing.");
+        PageContent.Children.Add(Card("Tempest app updates", "Tempest checks for a newer release on launch. Download the latest executable from GitHub to update.", "Get latest Tempest", () => UpdateTempest_Click(this, new RoutedEventArgs())));
         PageContent.Children.Add(Card("Spicetify + Marketplace","Get the latest releases, with checksum verification and a recovery checkpoint.","Install / update",InstallReview,true));
         Pair(Card("Desktop Spotify","Download Spotify’s signed installer. The Store edition is left untouched.","Install Spotify",()=>Review("Install desktop Spotify","Download and verify Spotify’s installer, then launch it. Complete any Spotify setup windows that appear. This external installer cannot be cancelled from Tempest once launched. Existing Spotify files may be updated by Spotify’s installer.",engine.InstallSpotify,false,false)),Card("Check releases","See the latest Spicetify and Marketplace versions without changing files.","Check for updates",()=>_ = CheckUpdates()));
         PageContent.Children.Add(Card("Auto-apply shortcut","Create a separate “Spotify - Tempest” desktop shortcut that reapplies Spicetify when opened.","Create shortcut",()=>Review("Create auto-apply shortcut","Add a new desktop shortcut that runs spicetify auto. Your existing shortcuts and startup settings stay as they are.",engine.CreateShortcut,false)));

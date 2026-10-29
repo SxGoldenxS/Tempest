@@ -14,6 +14,8 @@ To try the interface without touching Spotify:
 
 Demo mode uses disposable sample files under the system temporary folder. It never launches or modifies your real Spotify installation. Activity includes a switch to simulate failure and exercise recovery.
 
+Tempest checks the latest public GitHub release when launched. If a newer version is available, a banner shows both versions and opens the release page with **Get update**. Replace your portable executable with the new download. Offline or failed checks do not block the app; you can also open the latest release from **Install & update**. Demo mode skips the network check.
+
 ## Tools
 
 - **Overview:** installation status, install/update, reapply, recovery.

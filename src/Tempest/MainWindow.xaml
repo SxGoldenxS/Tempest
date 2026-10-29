@@ -15,7 +15,7 @@
    </Grid>
    <StackPanel DockPanel.Dock="Bottom" Margin="4,0">
     <Button Style="{StaticResource Nav}" Click="Docs_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE8A5;" Style="{StaticResource NavIcon}"/><TextBlock Text="Help &amp; documentation" FontSize="12" VerticalAlignment="Center"/></StackPanel></Button>
-    <TextBlock Text="Rimuru edition · v0.2" Foreground="#8FB8CE" FontSize="11" Margin="15,14,0,0"/>
+    <TextBlock x:Name="VersionLabel" Foreground="#8FB8CE" FontSize="11" Margin="15,14,0,0"/>
    </StackPanel>
    <StackPanel x:Name="Navigation">
     <Button Tag="overview" Style="{StaticResource Nav}" Click="Navigate_Click"><StackPanel Orientation="Horizontal"><TextBlock Text="&#xE80F;" Style="{StaticResource NavIcon}"/><TextBlock Text="Overview" VerticalAlignment="Center"/></StackPanel></Button>
@@ -37,14 +37,19 @@
       <Button Content="Open Spotify" Style="{StaticResource ActionButton}" Click="OpenSpotify_Click"/>
      </StackPanel>
     </Grid>
-    <Border x:Name="Notice" Grid.Row="1" Background="#253F54" BorderBrush="#345267" BorderThickness="1" CornerRadius="6" Padding="13,11" Margin="0,0,0,20">
+    <StackPanel Grid.Row="1">
+    <Border x:Name="UpdateNotice" Visibility="Collapsed" Background="#29495F" BorderBrush="#91D5F3" BorderThickness="1" CornerRadius="6" Padding="13" Margin="0,0,0,10">
+     <DockPanel><Button Content="Get update" DockPanel.Dock="Right" Style="{StaticResource Primary}" Click="UpdateTempest_Click" Margin="12,0,0,0"/><TextBlock x:Name="UpdateText" TextWrapping="Wrap" FontSize="12" VerticalAlignment="Center" AutomationProperties.LiveSetting="Polite"/></DockPanel>
+    </Border>
+    <Border x:Name="Notice" Background="#253F54" BorderBrush="#345267" BorderThickness="1" CornerRadius="6" Padding="13,11" Margin="0,0,0,20">
      <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="25"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><TextBlock Text="&#xE946;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="#91D5F3" VerticalAlignment="Center"/><TextBlock x:Name="NoticeText" Grid.Column="1" Text="Checking your installation…" FontSize="12" Foreground="#BCD5E5" TextWrapping="Wrap"/></Grid>
     </Border>
+    </StackPanel>
     <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="0,0,6,0"><StackPanel x:Name="PageContent"/></ScrollViewer>
     <Border x:Name="OperationPanel" Grid.Row="3" Visibility="Collapsed" Background="#21384B" BorderBrush="#3A576C" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,18,0,0">
      <StackPanel><Grid><TextBlock x:Name="OperationTitle" Text="Ready" FontWeight="SemiBold" FontSize="13"/><Button x:Name="CancelButton" Content="Cancel" Style="{StaticResource ActionButton}" HorizontalAlignment="Right" Padding="10,4" Visibility="Collapsed" Click="Cancel_Click"/></Grid><TextBlock x:Name="OperationDetail" Style="{StaticResource Caption}" Margin="0,5,0,0"/><ProgressBar x:Name="Progress" Height="3" Foreground="#91D5F3" Background="#263F52" Visibility="Collapsed" Margin="0,12,0,0"/></StackPanel>
     </Border>
-    <Grid Grid.Row="4" Margin="0,20,0,0"><TextBlock x:Name="FooterStatus" Text="Ready" Foreground="#8AA6BB" FontSize="11"/><TextBlock Text="Local only · No telemetry" Foreground="#7893A9" FontSize="11" HorizontalAlignment="Right"/></Grid>
+    <Grid Grid.Row="4" Margin="0,20,0,0"><TextBlock x:Name="FooterStatus" Text="Ready" Foreground="#8AA6BB" FontSize="11"/><TextBlock Text="No telemetry" Foreground="#7893A9" FontSize="11" HorizontalAlignment="Right"/></Grid>
    </Grid>
   </Border>
   <Grid x:Name="ReviewOverlay" Grid.ColumnSpan="2" Background="#A608101A" Visibility="Collapsed">
